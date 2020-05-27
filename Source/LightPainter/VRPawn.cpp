@@ -21,12 +21,12 @@ void AVRPawn::BeginPlay()
 {
   Super::BeginPlay();
 
-  if (!HandControllerClass)
+  if (!PaintBrushHandControllerClass)
     return;
 
-  RightHandController = GetWorld()->SpawnActor<AHandController>(HandControllerClass);
-  RightHandController->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
-  RightHandController->SetOwner(this);
+  RightPaintBrushHandController = GetWorld()->SpawnActor<AHandControllerBase>(PaintBrushHandControllerClass);
+  RightPaintBrushHandController->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
+  RightPaintBrushHandController->SetOwner(this);
 }
 
 void AVRPawn::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
@@ -42,14 +42,14 @@ void AVRPawn::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
 
 void AVRPawn::RightTriggerPressed()
 {
-  if (RightHandController)
-    RightHandController->TriggerPressed();
+  if (RightPaintBrushHandController)
+    RightPaintBrushHandController->TriggerPressed();
 }
 
 void AVRPawn::RightTriggerReleased()
 {
-  if (RightHandController)
-    RightHandController->TriggerReleased();
+  if (RightPaintBrushHandController)
+    RightPaintBrushHandController->TriggerReleased();
 }
 
 void AVRPawn::Save()
