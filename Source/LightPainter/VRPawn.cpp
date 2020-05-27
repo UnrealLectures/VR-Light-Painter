@@ -4,6 +4,8 @@
 
 #include "Engine/World.h"
 
+#include "Saving/PainterSaveGame.h"
+
 AVRPawn::AVRPawn()
 {
   PrimaryActorTick.bCanEverTick = false;
@@ -33,6 +35,9 @@ void AVRPawn::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
 
   PlayerInputComponent->BindAction(TEXT("RightTrigger"), IE_Pressed, this, &AVRPawn::RightTriggerPressed);
   PlayerInputComponent->BindAction(TEXT("RightTrigger"), IE_Released, this, &AVRPawn::RightTriggerReleased);
+
+  PlayerInputComponent->BindAction(TEXT("Save"), IE_Released, this, &AVRPawn::Save);
+  PlayerInputComponent->BindAction(TEXT("Load"), IE_Released, this, &AVRPawn::Load);
 }
 
 void AVRPawn::RightTriggerPressed()
@@ -45,4 +50,26 @@ void AVRPawn::RightTriggerReleased()
 {
   if (RightHandController)
     RightHandController->TriggerReleased();
+}
+
+void AVRPawn::Save()
+{
+  UPainterSaveGame *Painting = UPainterSaveGame::Create();
+  Painting->SetState("Hello World");
+  Painting->SerializeFromWorld(GetWorld());
+  Painting->Save();
+}
+
+void AVRPawn::Load()
+{
+  UPainterSaveGame *Painting = UPainterSaveGame::Load();
+  if (Painting)
+  {
+    Painting->DeserializeToWorld(GetWorld());
+    UE_LOG(LogTemp, Warning, TEXT("Painting State %s"), *Painting->GetState());
+  }
+  else
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Not found"));
+  }
 }

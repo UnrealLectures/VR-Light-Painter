@@ -23,12 +23,21 @@ private:
   // Methods
   FTransform GetNextSegmentTransform(FVector CurrentLocation) const;
 
+  FTransform GetNextJointTransform(FVector CurrentLocation) const;
+
+  FVector GetNextSegmentScale(FVector CurrentLocation) const;
+  FQuat GetNextSegmentRotation(FVector CurrentLocation) const;
+  FVector GetNextSegmentLocation(FVector CurrentLocation) const;
+
   // Components
   UPROPERTY(VisibleAnywhere)
   USceneComponent *Root;
 
   UPROPERTY(VisibleAnywhere)
   UInstancedStaticMeshComponent *StrokeMeshes;
+
+  UPROPERTY(VisibleAnywhere)
+  UInstancedStaticMeshComponent *JointMeshes;
 
   // State
   FVector PreviousCursorLocation;
