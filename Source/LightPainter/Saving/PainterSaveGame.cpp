@@ -4,6 +4,9 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
+#include "Misc/Guid.h"
+#include "PainterSaveGameIndex.h"
+
 #include "../Stroke.h"
 
 UPainterSaveGame *UPainterSaveGame::Create()
@@ -12,11 +15,23 @@ UPainterSaveGame *UPainterSaveGame::Create()
 
   NewSaveGame->SlotName = FGuid::NewGuid().ToString();
 
+  if (!NewSaveGame->Save())
+    return nullptr;
+
+  UPainterSaveGameIndex *Index = UPainterSaveGameIndex::Load();
+  Index->AddSaveGame(NewSaveGame);
+  Index->Save();
+
   return NewSaveGame;
 }
 
 bool UPainterSaveGame::Save()
 {
+  UE_LOG(LogTemp, Warning, TEXT("Painting Index:"));
+  for (FString CurrentSlotName : UPainterSaveGameIndex::Load()->GetSlotNames())
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Painting name: %s"), *CurrentSlotName);
+  }
   return UGameplayStatics::SaveGameToSlot(this, SlotName, 0);
 }
 
