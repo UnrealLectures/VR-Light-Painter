@@ -80,5 +80,5 @@ DerivedDataCache/*
 /.vscode/*
 LightPainter.code-workspace
 
-# Imports
-Content/ArchVizAssets/*
+# Design
+Design/*
