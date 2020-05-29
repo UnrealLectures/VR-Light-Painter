@@ -47,8 +47,6 @@ void AVRPawn::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
 
   PlayerInputComponent->BindAction(TEXT("RightTrigger"), IE_Pressed, this, &AVRPawn::RightTriggerPressed);
   PlayerInputComponent->BindAction(TEXT("RightTrigger"), IE_Released, this, &AVRPawn::RightTriggerReleased);
-
-  PlayerInputComponent->BindAction(TEXT("Save"), IE_Released, this, &AVRPawn::Save);
 }
 
 void AVRPawn::RightTriggerPressed()
@@ -61,15 +59,4 @@ void AVRPawn::RightTriggerReleased()
 {
   if (RightHandController)
     RightHandController->TriggerReleased();
-}
-
-void AVRPawn::Save()
-{
-  auto GameMode = Cast<APaintingGameMode>(GetWorld()->GetAuthGameMode());
-  if (!GameMode)
-    return;
-  GameMode->Save();
-
-  UStereoLayerFunctionLibrary::ShowSplashScreen();
-  UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenu"));
 }

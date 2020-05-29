@@ -2,6 +2,7 @@
 
 #include "PaintingGameMode.h"
 
+#include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/StereoLayerFunctionLibrary.h"
 
@@ -37,6 +38,14 @@ void APaintingGameMode::Load()
   {
     UE_LOG(LogTemp, Warning, TEXT("Game slot not found: %s"), *SlotName);
   }
+}
+
+void APaintingGameMode::SaveAndQuit()
+{
+  Save();
+
+  UStereoLayerFunctionLibrary::ShowSplashScreen();
+  UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenu"));
 }
 
 void APaintingGameMode::BeginPlay()

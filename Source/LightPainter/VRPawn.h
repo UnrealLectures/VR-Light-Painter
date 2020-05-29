@@ -27,8 +27,6 @@ private:
   void RightTriggerPressed();
   void RightTriggerReleased();
 
-  void Save();
-
   // Config
   UPROPERTY(EditDefaultsOnly)
   TSubclassOf<AHandControllerBase> RightHandControllerClass;
