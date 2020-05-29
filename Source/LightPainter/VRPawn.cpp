@@ -24,18 +24,21 @@ void AVRPawn::BeginPlay()
 {
   Super::BeginPlay();
 
-  UPainterSaveGame *Painting = UPainterSaveGame::Create();
-  if (Painting && Painting->Save())
+  if (RightHandControllerClass)
   {
-    CurrentSlotName = Painting->GetSlotName();
+    RightHandController = GetWorld()->SpawnActor<AHandControllerBase>(RightHandControllerClass);
+    RightHandController->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
+    RightHandController->SetHand(EControllerHand::Right);
+    RightHandController->SetOwner(this);
   }
 
-  if (!PaintBrushHandControllerClass)
-    return;
-
-  RightPaintBrushHandController = GetWorld()->SpawnActor<AHandControllerBase>(PaintBrushHandControllerClass);
-  RightPaintBrushHandController->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
-  RightPaintBrushHandController->SetOwner(this);
+  if (LeftHandControllerClass)
+  {
+    LeftHandController = GetWorld()->SpawnActor<AHandControllerBase>(LeftHandControllerClass);
+    LeftHandController->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
+    LeftHandController->SetHand(EControllerHand::Left);
+    LeftHandController->SetOwner(this);
+  }
 }
 
 void AVRPawn::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
@@ -50,14 +53,14 @@ void AVRPawn::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
 
 void AVRPawn::RightTriggerPressed()
 {
-  if (RightPaintBrushHandController)
-    RightPaintBrushHandController->TriggerPressed();
+  if (RightHandController)
+    RightHandController->TriggerPressed();
 }
 
 void AVRPawn::RightTriggerReleased()
 {
-  if (RightPaintBrushHandController)
-    RightPaintBrushHandController->TriggerReleased();
+  if (RightHandController)
+    RightHandController->TriggerReleased();
 }
 
 void AVRPawn::Save()

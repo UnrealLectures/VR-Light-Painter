@@ -31,7 +31,10 @@ private:
 
   // Config
   UPROPERTY(EditDefaultsOnly)
-  TSubclassOf<AHandControllerBase> PaintBrushHandControllerClass;
+  TSubclassOf<AHandControllerBase> RightHandControllerClass;
+
+  UPROPERTY(EditDefaultsOnly)
+  TSubclassOf<AHandControllerBase> LeftHandControllerClass;
 
   // Components
   UPROPERTY(VisibleAnywhere)
@@ -42,9 +45,8 @@ private:
 
   // Reference
   UPROPERTY()
-  AHandControllerBase *RightPaintBrushHandController;
+  AHandControllerBase *RightHandController;
 
-  // State
   UPROPERTY()
-  FString CurrentSlotName;
+  AHandControllerBase *LeftHandController;
 };

@@ -22,6 +22,8 @@ public:
   UFUNCTION(BlueprintCallable)
   void AddPainting(int32 index, FString PaintingName);
 
+  void ClearPaintings();
+
 protected:
   UPROPERTY(BlueprintReadonly, VisibleAnywhere, meta = (BindWidget))
   UUniformGridPanel *PaintingGrid;
