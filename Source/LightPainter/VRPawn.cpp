@@ -3,8 +3,11 @@
 #include "VRPawn.h"
 
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/StereoLayerFunctionLibrary.h"
 
 #include "Saving/PainterSaveGame.h"
+#include "PaintingGameMode.h"
 
 AVRPawn::AVRPawn()
 {
@@ -43,7 +46,6 @@ void AVRPawn::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
   PlayerInputComponent->BindAction(TEXT("RightTrigger"), IE_Released, this, &AVRPawn::RightTriggerReleased);
 
   PlayerInputComponent->BindAction(TEXT("Save"), IE_Released, this, &AVRPawn::Save);
-  PlayerInputComponent->BindAction(TEXT("Load"), IE_Released, this, &AVRPawn::Load);
 }
 
 void AVRPawn::RightTriggerPressed()
@@ -60,25 +62,11 @@ void AVRPawn::RightTriggerReleased()
 
 void AVRPawn::Save()
 {
-  UPainterSaveGame *Painting = UPainterSaveGame::Load(CurrentSlotName);
-  if (Painting)
-  {
-    Painting->SetState("Hello World");
-    Painting->SerializeFromWorld(GetWorld());
-    Painting->Save();
-  }
-}
+  auto GameMode = Cast<APaintingGameMode>(GetWorld()->GetAuthGameMode());
+  if (!GameMode)
+    return;
+  GameMode->Save();
 
-void AVRPawn::Load()
-{
-  UPainterSaveGame *Painting = UPainterSaveGame::Load(CurrentSlotName);
-  if (Painting)
-  {
-    Painting->DeserializeToWorld(GetWorld());
-    UE_LOG(LogTemp, Warning, TEXT("Painting State %s"), *Painting->GetState());
-  }
-  else
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Not found"));
-  }
+  UStereoLayerFunctionLibrary::ShowSplashScreen();
+  UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenu"));
 }

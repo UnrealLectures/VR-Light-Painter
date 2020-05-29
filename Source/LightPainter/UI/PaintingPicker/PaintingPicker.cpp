@@ -2,6 +2,7 @@
 
 #include "PaintingPicker.h"
 
+#include "../../Saving/PainterSaveGameIndex.h"
 #include "PaintingGrid.h"
 
 // Sets default values
@@ -27,5 +28,10 @@ void APaintingPicker::BeginPlay()
   if (!PaintingGridWidget)
     return;
 
-  PaintingGridWidget->AddPainting();
+  int32 Index = 0;
+  for (FString CurrentSlotName : UPainterSaveGameIndex::Load()->GetSlotNames())
+  {
+    PaintingGridWidget->AddPainting(Index, CurrentSlotName);
+    ++Index;
+  }
 }
