@@ -5,7 +5,6 @@
 #include "Kismet/StereoLayerFunctionLibrary.h"
 #include "../../Saving/PainterSaveGameIndex.h"
 #include "../../Saving/PainterSaveGame.h"
-#include "PaintingGrid.h"
 #include "ActionBar.h"
 
 // Sets default values
@@ -33,35 +32,68 @@ void APaintingPicker::BeginPlay()
     ActionBarWidget->SetParentPicker(this);
   }
 
+  Refresh();
+}
+
+void APaintingPicker::Refresh()
+{
   RefreshSlots();
+  RefreshDots();
 }
 
 void APaintingPicker::RefreshSlots()
 {
-  UPaintingGrid *PaintingGridWidget = Cast<UPaintingGrid>(PaintingGridComponent->GetUserWidgetObject());
-  if (!PaintingGridWidget)
+  if (!GetPaintingGrid())
     return;
 
-  PaintingGridWidget->ClearPaintings();
+  GetPaintingGrid()->ClearPaintings();
 
-  int32 Index = 0;
-  for (FString CurrentSlotName : UPainterSaveGameIndex::Load()->GetSlotNames())
+  int32 StartOffset = CurrentPage * (GetPaintingGrid()->GetNumberOfSlots());
+  auto SlotNames = UPainterSaveGameIndex::Load()->GetSlotNames();
+  for (int32 i = 0; i < GetPaintingGrid()->GetNumberOfSlots() && StartOffset + i < SlotNames.Num(); ++i)
   {
-    PaintingGridWidget->AddPainting(Index, CurrentSlotName);
-    ++Index;
+    GetPaintingGrid()->AddPainting(i, SlotNames[StartOffset + i]);
   }
+}
+
+void APaintingPicker::RefreshDots()
+{
+  if (!GetPaintingGrid())
+    return;
+
+  GetPaintingGrid()->ClearPaginationDots();
+
+  for (int32 i = 0; i < GetNumberOfPages(); i++)
+  {
+    GetPaintingGrid()->AddPaginationDot(CurrentPage == i);
+  }
+}
+
+int32 APaintingPicker::GetNumberOfPages() const
+{
+  if (!GetPaintingGrid())
+    return -1;
+  int32 TotalNumberOfSlots = UPainterSaveGameIndex::Load()->GetSlotNames().Num();
+  int32 SlotsPerPage = GetPaintingGrid()->GetNumberOfSlots();
+  return FMath::CeilToInt((float)TotalNumberOfSlots / SlotsPerPage);
 }
 
 void APaintingPicker::AddPainting()
 {
   UPainterSaveGame::Create();
-  RefreshSlots();
+  Refresh();
 }
 
 void APaintingPicker::ToggleDeleteMode()
 {
-  UPaintingGrid *PaintingGridWidget = Cast<UPaintingGrid>(PaintingGridComponent->GetUserWidgetObject());
-  if (!PaintingGridWidget)
+  if (!GetPaintingGrid())
     return;
-  PaintingGridWidget->ClearPaintings();
+  GetPaintingGrid()->ClearPaintings();
+}
+
+void APaintingPicker::UpdateCurrentPage(int32 Offset)
+{
+  CurrentPage = FMath::Clamp(CurrentPage + Offset, 0, GetNumberOfPages() - 1);
+
+  Refresh();
 }
